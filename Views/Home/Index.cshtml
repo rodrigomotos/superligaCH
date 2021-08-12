@@ -1,0 +1,238 @@
+﻿@using ChallengeSuperLiga.Models
+@using System.Web.Mvc.Html;
+@using ChallengeSuperLiga.Extensions;
+
+@model SocioViewModel
+
+@{
+    ViewBag.Title = "SuperligaChallenge";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //muestro, o no, el formulario para subir
+        HideShowForm();
+
+        //reinicio el fileUpload
+        RefreshFileUpload();
+
+        //permite arrastrar un archivo desde directorio a fileUpload
+        AddFileFromExplorer();
+
+        //movimiento de la barra de navegación
+        MoveMenu();
+
+        //acción para traer las vistas parciales mediante AJAX, seleccionando alguna opción de la barra
+        MenuOptionSelect();
+    });
+
+    function HideShowForm() {
+
+        var viewModel = "@string.IsNullOrEmpty(Model.File)";
+
+        if (viewModel != "True") {
+            $("#formFile").hide();
+            $("#enviarFormDiv").hide();
+        }
+        else {
+            $("#formFile").show();
+            $("#enviarFormDiv").show();
+        }
+    }
+
+    function RefreshFileUpload() {
+        $("#btnRefresh").click(
+            function () {
+                $("#fileUpload").val('');
+            }
+        );
+    }
+
+    function AddFileFromExplorer() {
+        const fileSelector = document.getElementById('fileUpload');
+        fileSelector.addEventListener('change', (event) => {
+            const fileList = event.target.files;
+            console.log(fileList);
+        });
+    }
+
+    function MoveMenu() {
+        $(function () {
+            // oculta barra de navegación
+            $('.sidebarCollapse').on('click', function () {
+                $('#sidebar, #content').toggleClass('active');
+            });
+        });
+    }
+
+    function MenuOptionSelect() {
+        $("#persReg").click(function () {
+            GetPartialView(1);
+        });
+
+        $("#promEdadRac").click(function () {
+            GetPartialView(2);
+        });
+
+        $("#casadUniv").click(function () {
+            GetPartialView(3);
+        });
+
+        $("#nomRiver").click(function () {
+            GetPartialView(4);
+        });
+
+        $("#cantSociosEdad").click(function () {
+            GetPartialView(5);
+        });
+    }
+
+    function GetPartialView(option) {
+
+        var file = $("#File").val();
+
+        $('#partialViewDiv').html("<img src='Images/loading.gif' />");
+
+        var urlAction = '';
+        switch (option) {
+            case 1:
+                urlAction = '@Url.Action("PartialView1", "Home")';
+                break;
+            case 2:
+                urlAction = '@Url.Action("PartialView2", "Home")';
+                break;
+            case 3:
+                urlAction = '@Url.Action("PartialView3", "Home")';
+                break;
+            case 4:
+                urlAction = '@Url.Action("PartialView4", "Home")';
+                break;
+            case 5:
+                urlAction = '@Url.Action("PartialView5", "Home")';
+                break;
+        }
+
+        $.ajax({
+                            url: urlAction,
+                            type: "POST",
+                 data: { stringCSV: file },
+                            complete: function (xmlHttp) {
+                    },
+                            success: function (response) {
+                                $('#partialViewDiv').html("");
+                                $('#partialViewDiv').html(response);
+            },
+            fail: function (jqXHR, textStatus, errorThrown) {
+                alert('Error!!');
+                $('#partialViewDiv').html("");
+                if (jqXHR.status === 0) {
+                    alert('Error de conexión, verifique.');
+                } else if (jqXHR.status == 404) {
+                    alert('Petición no válida [404]');
+                } else if (jqXHR.status == 500) {
+                    alert('Error interno del servidor [500].');
+                } else if (textStatus === 'parsererror') {
+                    alert('Petición JSON fallida.');
+                } else if (textStatus === 'timeout') {
+                    alert('Tiempo de espera agotado.');
+                } else if (textStatus === 'abort') {
+                    alert('Petición Ajax terminada.');
+                } else {
+                    alert('Error: ' + jqXHR.responseText);
+                }
+            }
+                    });
+        }
+
+
+
+</script>
+
+@using (Html.BeginForm("Index", "Home", FormMethod.Post, new { enctype = "multipart/form-data", id = "form1" }))
+{
+    <div class="modal" tabindex="-1" role="dialog" id="formFile">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                </div>
+                <div class="modal-body">
+                    <label for="fileUpload">Arrastre o busque su archivo</label>
+                    @Html.TextBoxFor(model => model.File, new { type = "file", accept = ".csv", required = "required", id = "fileUpload", @class = "form-control" })
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" value="Enviar" class="btn btn-primary" />
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnRefresh">Refrescar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    if (!string.IsNullOrEmpty(Model.File))
+    {
+        @Html.HiddenFor(model => model.File)
+        <!--navbar -->
+        <div class="vertical-nav bg-white" id="sidebar">
+            <div class="py-4 px-3 mb-4 bg-light">
+                <div class="media d-flex align-items-center">
+                    <div class="media-body">
+                        <h4 class="m-0">Challenge</h4>
+                        <h5 class="font-weight-light text-muted mb-0">Superliga</h5>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-gray font-weight-bold text-uppercase px-3 small pb-4 mb-0">Menú</p>
+            <ul class="nav flex-column bg-white mb-0">
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-dark font-italic bg-light sidebarCollapse" id="persReg">
+                        <i class="fa fa-address-card mr-3 text-primary fa-fw"></i>
+                        Personas Registradas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-dark font-italic bg-light sidebarCollapse" id="promEdadRac">
+                        <i class="fa fa-address-card mr-3 text-primary fa-fw"></i>
+                        Promedio edad socios Racing
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-dark font-italic bg-light sidebarCollapse" id="casadUniv">
+                        <i class="fa fa-address-card mr-3 text-primary fa-fw"></i>
+                        100 primeras personas casadas/universitarias
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-dark font-italic bg-light sidebarCollapse" id="nomRiver">
+                        <i class="fa fa-address-card mr-3 text-primary fa-fw"></i>
+                        5 nombres más comunes hichas River
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-dark font-italic bg-light sidebarCollapse" id="cantSociosEdad">
+                        <i class="fa fa-address-card mr-3 text-primary fa-fw"></i>
+                        Cant. socios por equipo con edades
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/" class="nav-link text-dark font-italic bg-light">
+                        <h5>Volver al inicio</h5>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!-- Fin navbar -->
+        <!-- Contenido y vista parcial -->
+        <div class="page-content p-5" id="content">
+            <button id="sidebarCollapse" type="button" class="btn btn-light bg-white rounded-pill shadow-sm px-4 mb-4 sidebarCollapse"><i class="fa fa-bars mr-2"></i><small class="text-uppercase font-weight-bold">Menú</small></button>
+            <div id="partialViewDiv">
+
+            </div>
+        </div>
+    }
+}
+
+
+
+
+

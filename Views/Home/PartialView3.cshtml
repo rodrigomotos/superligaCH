@@ -1,0 +1,46 @@
+﻿@using ChallengeSuperLiga.Models
+@using System.Web.Mvc.Html;
+@using ChallengeSuperLiga.Extensions;
+
+@model SocioViewModel
+
+@if (Model.CasadosUniversitarios != null)
+{
+    <table class="table table-dark text-center">
+        <thead>
+            <tr>
+                <th scope="col">
+                    
+                </th>
+                <th scope="col">
+                    @Html.LabelFor(Model => Model.SocioModelDto.Nombre)
+                </th>
+                <th scope="col">
+                    @Html.LabelFor(Model => Model.SocioModelDto.Edad)
+                </th>
+                <th scope="col">
+                    @Html.LabelFor(Model => Model.SocioModelDto.Equipo)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var list in Model.CasadosUniversitarios)
+            {
+            <tr>
+                <td scope="row">
+                    @Html.Label(list.Cont.ToString())
+                </td>
+                <td scope="row">
+                    @Html.Label(list.Nombre)
+                </td>
+                <td scope="row">
+                    @Html.Label(list.Edad.ToString())
+                </td>
+                <td scope="row">
+                    @Html.Label(list.Equipo)
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}

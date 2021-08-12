@@ -1,0 +1,58 @@
+﻿@using ChallengeSuperLiga.Models
+@using System.Web.Mvc.Html;
+@using ChallengeSuperLiga.Extensions;
+
+@model SocioViewModel
+
+@if (Model.SociosEdad != null)
+{
+    <table class="table table-dark text-center">
+        <thead>
+            <tr>
+                <th scope="col">
+
+                </th>
+                <th scope="col">
+                    @Html.LabelFor(Model => Model.SocioModelDto.Equipo)
+                </th>
+                <th scope="col">
+                    @Html.LabelFor(Model => Model.SocioModelDto.CantSocios)
+                </th>
+                <th scope="col">
+                    @Html.LabelFor(Model => Model.SocioModelDto.PromedioEdad)
+                </th>
+                <th scope="col">
+                    @Html.LabelFor(Model => Model.SocioModelDto.MenorEdad)
+                </th>
+                <th scope="col">
+                    @Html.LabelFor(Model => Model.SocioModelDto.MayorEdad)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var list in Model.SociosEdad)
+            {
+            <tr>
+                <td scope="row">
+                    @Html.Label(list.Cont.ToString())
+                </td>
+                <td scope="row">
+                    @Html.Label(list.Equipo)
+                </td>
+                <td scope="row">
+                    @Html.Label(list.CantSocios.ToString())
+                </td>
+                <td scope="row">
+                    @Html.Label(list.PromedioEdad.ToString())
+                </td>
+                <td scope="row">
+                    @Html.Label(list.MenorEdad.ToString())
+                </td>
+                <td scope="row">
+                    @Html.Label(list.MayorEdad.ToString())
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
